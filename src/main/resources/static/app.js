@@ -320,6 +320,8 @@ async function refreshAuthState() {
         authStatus.textContent = "Not signed in";
         logoutBtn.classList.add("hidden");
         historyPanel.classList.add("hidden");
+        setAppVisibility(false);
+        toggleAuthPanel(true);
         return;
     }
     try {
@@ -327,12 +329,16 @@ async function refreshAuthState() {
         authStatus.textContent = `Signed in as ${profile.username} (${profile.email})`;
         logoutBtn.classList.remove("hidden");
         historyPanel.classList.remove("hidden");
+        setAppVisibility(true);
+        toggleAuthPanel(false);
         await loadHistory();
     } catch (_) {
         setToken("");
         authStatus.textContent = "Session expired. Please login again.";
         logoutBtn.classList.add("hidden");
         historyPanel.classList.add("hidden");
+        setAppVisibility(false);
+        toggleAuthPanel(true);
     }
 }
 
@@ -423,6 +429,12 @@ async function api(url, options = {}, useAuth = true) {
 
 function toggleAuthPanel(show) {
     document.getElementById("authPanel").classList.toggle("hidden", !show);
+}
+
+function setAppVisibility(isLoggedIn) {
+    document.querySelectorAll(".requires-auth").forEach((element) => {
+        element.classList.toggle("hidden", !isLoggedIn);
+    });
 }
 
 function setToken(token) {

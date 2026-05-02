@@ -1,0 +1,20 @@
+# Build output
+/target/
+
+# Runtime DB files
+/data/
+*.mv.db
+*.trace.db
+
+# Local Maven wrapper extracted/runtime artifacts
+/.mvn/wrapper/apache-maven/
+/.mvn/wrapper/apache-maven-*-bin.zip
+/.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log

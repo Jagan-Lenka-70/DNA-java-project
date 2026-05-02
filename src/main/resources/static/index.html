@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="app-shell">
-    <header class="topbar">
+    <header class="topbar requires-auth">
         <div>
             <p class="eyebrow">Bioinformatics Workbench</p>
             <h1>DNA Sequence Matcher and Alignment Tool</h1>
@@ -17,12 +17,12 @@
         <button id="themeToggle" class="btn btn-ghost" type="button">Toggle Theme</button>
     </header>
 
-    <main class="layout">
+    <main class="layout requires-auth">
         <section class="card input-card">
             <div class="auth-bar">
                 <div id="authStatus">Not signed in</div>
                 <div class="auth-actions">
-                    <button id="openLoginBtn" class="btn btn-ghost" type="button">Login / Register</button>
+                    <button id="openLoginBtn" class="btn btn-ghost" type="button">Start Here: Login / Register</button>
                     <button id="logoutBtn" class="btn btn-ghost hidden" type="button">Logout</button>
                 </div>
             </div>
@@ -108,7 +108,7 @@
         </section>
     </main>
 
-    <section class="card hidden" id="playbackPanel">
+    <section class="card hidden requires-auth" id="playbackPanel">
         <div class="card-head">
             <h2>Traceback Playback</h2>
             <div class="result-actions">
@@ -122,7 +122,7 @@
         <p id="playbackInfo" class="hint">Traceback step: 0 / 0</p>
     </section>
 
-    <section class="card hidden" id="historyPanel">
+    <section class="card hidden requires-auth" id="historyPanel">
         <div class="card-head">
             <h2>Saved Analysis History (DB)</h2>
             <button id="refreshHistoryBtn" class="btn btn-ghost" type="button">Refresh</button>
@@ -130,7 +130,7 @@
         <div id="historyList" class="history-list"></div>
     </section>
 
-    <section class="card">
+    <section class="card requires-auth">
         <div class="card-head">
             <h2>Batch FASTA Analyzer</h2>
         </div>
@@ -154,10 +154,10 @@
         <div id="batchReportWrap" class="tableWrap hidden"></div>
     </section>
 
-    <section class="card hidden" id="authPanel">
+    <section class="card auth-landing" id="authPanel">
         <div class="card-head">
             <h2>Authentication</h2>
-            <button id="closeAuthBtn" class="btn btn-ghost" type="button">Close</button>
+            <button id="closeAuthBtn" class="btn btn-ghost hidden" type="button">Close</button>
         </div>
         <div class="grid two">
             <form id="loginForm" class="auth-form">
@@ -192,7 +192,7 @@
         <p id="authMessage" class="hint"></p>
     </section>
 
-    <section class="card hidden" id="resultPanel">
+    <section class="card hidden requires-auth" id="resultPanel">
         <div class="card-head">
             <h2>Detailed Results</h2>
             <div class="result-actions">

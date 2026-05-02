@@ -102,6 +102,20 @@ h1 {
     margin-top: 16px;
 }
 
+.auth-landing {
+    max-width: 880px;
+    margin: 24px auto;
+    background: linear-gradient(180deg, var(--card), var(--card-soft));
+}
+
+.auth-landing .grid.two {
+    align-items: stretch;
+}
+
+.auth-landing .auth-form {
+    min-height: 100%;
+}
+
 .card-head {
     display: flex;
     justify-content: space-between;
