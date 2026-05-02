@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Sequence Matcher and Alignment Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Bioinformatics Workbench</p>
+            <h1>DNA Sequence Matcher and Alignment Tool</h1>
+            <p class="subtext">Analyze sequence similarity using Global (Needleman-Wunsch) and Local (Smith-Waterman) dynamic programming.</p>
+        </div>
+        <button id="themeToggle" class="btn btn-ghost" type="button">Toggle Theme</button>
+    </header>
+
+    <main class="layout">
+        <section class="card input-card">
+            <div class="auth-bar">
+                <div id="authStatus">Not signed in</div>
+                <div class="auth-actions">
+                    <button id="openLoginBtn" class="btn btn-ghost" type="button">Login / Register</button>
+                    <button id="logoutBtn" class="btn btn-ghost hidden" type="button">Logout</button>
+                </div>
+            </div>
+
+            <div class="card-head">
+                <h2>Alignment Setup</h2>
+                <div class="preset-group">
+                    <button class="btn btn-chip" type="button" data-preset="shortMatch">Short Match</button>
+                    <button class="btn btn-chip" type="button" data-preset="mutation">Mutation</button>
+                    <button class="btn btn-chip" type="button" data-preset="evolution">Evolution</button>
+                </div>
+            </div>
+
+            <form id="alignmentForm">
+                <div class="grid two">
+                    <label class="field side-editor">
+                        <span>Sequence 1 (with ruler)</span>
+                        <div class="ruler" id="ruler1"></div>
+                        <textarea id="sequence1" rows="5" placeholder="Example: ACGTACGTTGCA"></textarea>
+                        <small id="seq1Meta" class="meta">Length: 0 | GC: 0%</small>
+                    </label>
+                    <label class="field side-editor">
+                        <span>Sequence 2 (with ruler)</span>
+                        <div class="ruler" id="ruler2"></div>
+                        <textarea id="sequence2" rows="5" placeholder="Example: ACTTACGTCGCA"></textarea>
+                        <small id="seq2Meta" class="meta">Length: 0 | GC: 0%</small>
+                    </label>
+                </div>
+
+                <div class="grid four">
+                    <label class="field">
+                        <span>Algorithm</span>
+                        <select id="algorithmType">
+                            <option value="GLOBAL">Global (Needleman-Wunsch)</option>
+                            <option value="LOCAL">Local (Smith-Waterman)</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span>Match</span>
+                        <input id="matchScore" type="number" value="2" min="-10" max="10">
+                    </label>
+                    <label class="field">
+                        <span>Mismatch</span>
+                        <input id="mismatchScore" type="number" value="-1" min="-10" max="10">
+                    </label>
+                    <label class="field">
+                        <span>Gap</span>
+                        <input id="gapPenalty" type="number" value="-2" min="-10" max="0">
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button id="analyzeBtn" class="btn btn-primary" type="submit">Analyze Alignment</button>
+                    <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+                </div>
+                <p class="hint">Allowed nucleotides: A, C, G, T. Inputs are auto-normalized to uppercase.</p>
+                <p id="errorBox" class="error hidden"></p>
+                <p id="loadingBox" class="loading hidden">Computing alignment matrix...</p>
+            </form>
+        </section>
+
+        <section class="card insights-card">
+            <h2>Quick Insights</h2>
+            <div class="kpi-grid">
+                <article class="kpi">
+                    <span>Algorithm</span>
+                    <strong id="resultAlgorithm">-</strong>
+                </article>
+                <article class="kpi">
+                    <span>Score</span>
+                    <strong id="resultScore">-</strong>
+                </article>
+                <article class="kpi">
+                    <span>Identity</span>
+                    <strong id="resultIdentity">-</strong>
+                </article>
+                <article class="kpi">
+                    <span>Traceback Steps</span>
+                    <strong id="tracebackSteps">-</strong>
+                </article>
+            </div>
+            <p id="resultExplanation" class="explanation">Run an analysis to view detailed interpretation.</p>
+        </section>
+    </main>
+
+    <section class="card hidden" id="playbackPanel">
+        <div class="card-head">
+            <h2>Traceback Playback</h2>
+            <div class="result-actions">
+                <button id="playBtn" class="btn btn-ghost" type="button">Play</button>
+                <button id="pauseBtn" class="btn btn-ghost" type="button">Pause</button>
+                <button id="stepBtn" class="btn btn-ghost" type="button">Step</button>
+                <button id="resetPlaybackBtn" class="btn btn-ghost" type="button">Reset</button>
+            </div>
+        </div>
+        <input id="playbackRange" type="range" min="1" value="1" step="1">
+        <p id="playbackInfo" class="hint">Traceback step: 0 / 0</p>
+    </section>
+
+    <section class="card hidden" id="historyPanel">
+        <div class="card-head">
+            <h2>Saved Analysis History (DB)</h2>
+            <button id="refreshHistoryBtn" class="btn btn-ghost" type="button">Refresh</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+    </section>
+
+    <section class="card">
+        <div class="card-head">
+            <h2>Batch FASTA Analyzer</h2>
+        </div>
+        <form id="batchForm">
+            <div class="grid two">
+                <label class="field">
+                    <span>Upload FASTA File</span>
+                    <input id="fastaFile" type="file" accept=".fasta,.fa,.txt" required>
+                </label>
+                <label class="field">
+                    <span>Batch Algorithm</span>
+                    <select id="batchAlgorithmType">
+                        <option value="GLOBAL">Global (Needleman-Wunsch)</option>
+                        <option value="LOCAL">Local (Smith-Waterman)</option>
+                    </select>
+                </label>
+            </div>
+            <button class="btn btn-primary" type="submit">Run Batch Report</button>
+            <p id="batchStatus" class="hint"></p>
+        </form>
+        <div id="batchReportWrap" class="tableWrap hidden"></div>
+    </section>
+
+    <section class="card hidden" id="authPanel">
+        <div class="card-head">
+            <h2>Authentication</h2>
+            <button id="closeAuthBtn" class="btn btn-ghost" type="button">Close</button>
+        </div>
+        <div class="grid two">
+            <form id="loginForm" class="auth-form">
+                <h3>Login</h3>
+                <label class="field">
+                    <span>Username or Email</span>
+                    <input id="loginUser" type="text" required>
+                </label>
+                <label class="field">
+                    <span>Password</span>
+                    <input id="loginPass" type="password" required>
+                </label>
+                <button class="btn btn-primary" type="submit">Login</button>
+            </form>
+            <form id="registerForm" class="auth-form">
+                <h3>Create Account</h3>
+                <label class="field">
+                    <span>Username</span>
+                    <input id="regUser" type="text" required>
+                </label>
+                <label class="field">
+                    <span>Email</span>
+                    <input id="regEmail" type="email" required>
+                </label>
+                <label class="field">
+                    <span>Password</span>
+                    <input id="regPass" type="password" required>
+                </label>
+                <button class="btn btn-primary" type="submit">Register</button>
+            </form>
+        </div>
+        <p id="authMessage" class="hint"></p>
+    </section>
+
+    <section class="card hidden" id="resultPanel">
+        <div class="card-head">
+            <h2>Detailed Results</h2>
+            <div class="result-actions">
+                <button id="copyAlignmentBtn" class="btn btn-ghost" type="button">Copy Alignment</button>
+                <button id="downloadJsonBtn" class="btn btn-ghost" type="button">Download JSON</button>
+            </div>
+        </div>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="alignment" type="button">Alignment View</button>
+            <button class="tab-btn" data-tab="matrix" type="button">Matrix View</button>
+            <button class="tab-btn" data-tab="raw" type="button">Raw JSON</button>
+        </nav>
+
+        <div class="tab-panel" data-panel="alignment">
+            <pre class="alignment" id="alignmentBlock"></pre>
+        </div>
+
+        <div class="tab-panel hidden" data-panel="matrix">
+            <div class="matrix-toolbar">
+                <label class="inline">
+                    <input id="heatmapToggle" type="checkbox" checked>
+                    Heatmap colors
+                </label>
+                <label class="inline">
+                    <input id="pathToggle" type="checkbox" checked>
+                    Highlight traceback path
+                </label>
+            </div>
+            <div id="matrixContainer" class="tableWrap"></div>
+        </div>
+
+        <div class="tab-panel hidden" data-panel="raw">
+            <pre id="jsonBlock" class="json"></pre>
+        </div>
+    </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

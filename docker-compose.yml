@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  dna-sequence-matcher:
+    build: .
+    container_name: dna-sequence-matcher
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/dna-db
+      - SPRING_DATASOURCE_DRIVERCLASSNAME=org.h2.Driver
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_H2_CONSOLE_ENABLED=true
+    volumes:
+      - dna_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  dna_data:
