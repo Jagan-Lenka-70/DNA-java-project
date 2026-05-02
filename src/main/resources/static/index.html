@@ -156,11 +156,16 @@
 
     <section class="card auth-landing" id="authPanel">
         <div class="card-head">
-            <h2>Authentication</h2>
+            <h2>DNA Sequence Matcher</h2>
             <button id="closeAuthBtn" class="btn btn-ghost hidden" type="button">Close</button>
         </div>
-        <div class="grid two">
-            <form id="loginForm" class="auth-form">
+        <p class="hint">Sign in to start sequence analysis.</p>
+        <div class="demo-credentials">
+            <strong>Demo login:</strong> <span>demo@dna.com / demo123</span>
+            <button id="useDemoBtn" class="btn btn-chip" type="button">Use Demo</button>
+        </div>
+        <div class="grid">
+            <form id="loginForm" class="auth-form" autocomplete="on">
                 <h3>Login</h3>
                 <label class="field">
                     <span>Username or Email</span>
@@ -171,8 +176,9 @@
                     <input id="loginPass" type="password" required>
                 </label>
                 <button class="btn btn-primary" type="submit">Login</button>
+                <p class="hint auth-switch">New user? <button id="showRegisterBtn" class="link-btn" type="button">Create account</button></p>
             </form>
-            <form id="registerForm" class="auth-form">
+            <form id="registerForm" class="auth-form hidden" autocomplete="on">
                 <h3>Create Account</h3>
                 <label class="field">
                     <span>Username</span>
@@ -187,6 +193,7 @@
                     <input id="regPass" type="password" required>
                 </label>
                 <button class="btn btn-primary" type="submit">Register</button>
+                <p class="hint auth-switch">Already have account? <button id="showLoginBtn" class="link-btn" type="button">Back to login</button></p>
             </form>
         </div>
         <p id="authMessage" class="hint"></p>

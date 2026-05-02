@@ -24,7 +24,7 @@ public class AuthToken {
     @Column(nullable = false, unique = true, length = 64)
     private String token;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id")
     private UserAccount user;
 

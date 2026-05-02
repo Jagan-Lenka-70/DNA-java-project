@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface AnalysisRecordRepository extends JpaRepository<AnalysisRecord, Long> {
     List<AnalysisRecord> findTop50ByUserOrderByCreatedAtDesc(UserAccount user);
+    long countByUser(UserAccount user);
 }

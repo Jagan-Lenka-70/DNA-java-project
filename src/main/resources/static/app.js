@@ -115,6 +115,9 @@ function setupActions() {
     document.getElementById("logoutBtn").addEventListener("click", logout);
     document.getElementById("loginForm").addEventListener("submit", login);
     document.getElementById("registerForm").addEventListener("submit", register);
+    document.getElementById("showRegisterBtn").addEventListener("click", () => showAuthForm("register"));
+    document.getElementById("showLoginBtn").addEventListener("click", () => showAuthForm("login"));
+    document.getElementById("useDemoBtn").addEventListener("click", fillDemoLogin);
     document.getElementById("refreshHistoryBtn").addEventListener("click", loadHistory);
     document.getElementById("batchForm").addEventListener("submit", runBatch);
 }
@@ -270,8 +273,12 @@ async function login(event) {
             body: JSON.stringify(payload)
         }, false);
         setToken(data.token);
-        document.getElementById("authMessage").textContent = `Welcome back, ${data.username}.`;
+        document.getElementById("authStatus").textContent = `Signed in as ${data.username} (${data.email})`;
+        document.getElementById("authMessage").textContent = "";
+        setAppVisibility(true);
+        document.getElementById("logoutBtn").classList.remove("hidden");
         toggleAuthPanel(false);
+        showAuthForm("login");
         await refreshAuthState();
     } catch (error) {
         document.getElementById("authMessage").textContent = error.message;
@@ -292,8 +299,12 @@ async function register(event) {
             body: JSON.stringify(payload)
         }, false);
         setToken(data.token);
-        document.getElementById("authMessage").textContent = `Account created for ${data.username}.`;
+        document.getElementById("authStatus").textContent = `Signed in as ${data.username} (${data.email})`;
+        document.getElementById("authMessage").textContent = "";
+        setAppVisibility(true);
+        document.getElementById("logoutBtn").classList.remove("hidden");
         toggleAuthPanel(false);
+        showAuthForm("login");
         await refreshAuthState();
     } catch (error) {
         document.getElementById("authMessage").textContent = error.message;
@@ -429,6 +440,19 @@ async function api(url, options = {}, useAuth = true) {
 
 function toggleAuthPanel(show) {
     document.getElementById("authPanel").classList.toggle("hidden", !show);
+}
+
+function showAuthForm(formType) {
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+    loginForm.classList.toggle("hidden", formType !== "login");
+    registerForm.classList.toggle("hidden", formType !== "register");
+}
+
+function fillDemoLogin() {
+    showAuthForm("login");
+    document.getElementById("loginUser").value = "demo@dna.com";
+    document.getElementById("loginPass").value = "demo123";
 }
 
 function setAppVisibility(isLoggedIn) {
